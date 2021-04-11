@@ -50,47 +50,35 @@ var setting = {
 };
 function conncetion() {
     return __awaiter(this, void 0, void 0, function () {
-        var queue, msgs, conex, channel, res, _a, _b, _i, key, error_1;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
+        var queue, name_1, conex, channel_1, res, error_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
                 case 0:
-                    _c.trys.push([0, 8, , 9]);
+                    _a.trys.push([0, 4, , 5]);
                     queue = "users";
-                    msgs = [
-                        { name: "Antonio", lastName: "Olvera" },
-                        { name: "Mario", lastName: "Muñoz" },
-                    ];
+                    name_1 = "Antonio";
                     return [4, amqplib_1.default.connect(setting)];
                 case 1:
-                    conex = _c.sent();
+                    conex = _a.sent();
                     return [4, conex.createChannel()];
                 case 2:
-                    channel = _c.sent();
-                    return [4, channel.assertQueue(queue)];
+                    channel_1 = _a.sent();
+                    return [4, channel_1.assertQueue(queue)];
                 case 3:
-                    res = _c.sent();
-                    _a = [];
-                    for (_b in msgs)
-                        _a.push(_b);
-                    _i = 0;
-                    _c.label = 4;
+                    res = _a.sent();
+                    console.log("Wait message from " + name_1);
+                    channel_1.consume(queue, function (message) {
+                        var user = JSON.parse(message === null || message === void 0 ? void 0 : message.content.toString());
+                        console.log("Received user " + user.name);
+                        console.log(user);
+                        channel_1.ack(message);
+                    });
+                    return [3, 5];
                 case 4:
-                    if (!(_i < _a.length)) return [3, 7];
-                    key = _a[_i];
-                    return [4, channel.sendToQueue(queue, Buffer.from(JSON.stringify(msgs[key])))];
-                case 5:
-                    _c.sent();
-                    console.log("Mesage send to " + queue);
-                    _c.label = 6;
-                case 6:
-                    _i++;
-                    return [3, 4];
-                case 7: return [3, 9];
-                case 8:
-                    error_1 = _c.sent();
+                    error_1 = _a.sent();
                     console.error(error_1);
-                    return [3, 9];
-                case 9: return [2];
+                    return [3, 5];
+                case 5: return [2];
             }
         });
     });

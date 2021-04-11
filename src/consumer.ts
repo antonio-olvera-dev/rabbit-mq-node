@@ -16,21 +16,26 @@ async function conncetion() {
     try {
 
         const queue: string = "users";
-        const msgs: any = [
-            { name: "Antonio", lastName: "Olvera" },
-            { name: "Mario", lastName: "Muñoz" },
-        ]
+        const name: string = "Antonio";
 
         const conex: Connection = await amqplib.connect(setting);
         const channel: Channel = await conex.createChannel();
         const res: any = await channel.assertQueue(queue);
 
-        for (const key in msgs) {
+        console.log(`Wait message from ${name}`);
+        channel.consume(queue, (message: any) => {
 
-            await channel.sendToQueue(queue, Buffer.from(JSON.stringify(msgs[key])));
-            console.log(`Mesage send to ${queue}`);
-            
-        }
+            const user = JSON.parse(message?.content.toString());
+
+            console.log(`Received user ${user.name}`);
+            console.log(user);
+
+            channel.ack(message);
+            // if (user.name === name) {
+            //     channel.ack(message);
+            //     console.log('Delete message of queque...\n');
+            // }
+        });
 
 
 
